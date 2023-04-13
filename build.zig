@@ -1,15 +1,15 @@
 const std = @import("std");
 
-// Although this function looks imperative, note that its job is to
-// declaratively construct a build graph that will be executed by an external
-// runner.
-pub fn build(b: *std.Build) void {
-    const target = b.standardTargetOptions(.{});
-    const optimize = b.standardOptimizeOption(.{});
+fn root() []const u8 {
+    return std.fs.path.dirname(@src().file) orelse ".";
+}
 
+const root_path = root() ++ "/";
+
+pub fn addZigbotExecutable(b: *std.Build, target: std.zig.CrossTarget, optimize: std.builtin.Mode, comptime name: []const u8) void {
     const exe = b.addExecutable(.{
-        .name = "zigbot",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .name = name,
+        .root_source_file = .{ .path = "src/" ++ name ++ ".zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -17,11 +17,15 @@ pub fn build(b: *std.Build) void {
     exe.linkLibC();
     exe.addIncludePath("libs");
 
-    exe.addLibraryPath(".");
+    exe.addLibraryPath(root_path);
     exe.linkSystemLibrary("coverett");
-
-    // This declares intent for the executable to be installed into the
-    // standard location when the user invokes the "install" step (the default
-    // step when running `zig build`).
     exe.install();
+}
+
+pub fn build(b: *std.Build) void {
+    const target: std.zig.CrossTarget = b.standardTargetOptions(.{});
+    const optimize: std.builtin.Mode = b.standardOptimizeOption(.{});
+
+    addZigbotExecutable(b, target, optimize, "walk");
+    addZigbotExecutable(b, target, optimize, "dance");
 }
