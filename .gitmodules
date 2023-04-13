@@ -1,0 +1,3 @@
+[submodule "libs/coverett"]
+	path = libs/coverett
+	url = https://github.com/Bs0Dd/Coverett
