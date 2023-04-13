@@ -49,13 +49,15 @@ pub fn wait_for_last_action_completed(robot: coverett.device_t) void {
 
     while (true) {
         const statusResult: coverett.result_t = coverett.getActionResult(device, id);
-        std.debug.print("Status: {s}\n", .{statusResult.retString});
+        std.debug.print("\r\x1B[0K" ++ "Action status: {s}", .{statusResult.retString});
 
         const span = std.mem.span(statusResult.retString);
 
         if (std.mem.eql(u8, span, "SUCCESS")) break;
         if (std.mem.eql(u8, span, "FAILURE")) @panic("Action failed");
 
-        std.time.sleep(25 * 1000000);
+        std.time.sleep(50 * 1000000);
     }
+
+    std.debug.print("\n", .{});
 }
