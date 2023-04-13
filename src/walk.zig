@@ -21,6 +21,9 @@ pub fn manual_walk_loop(r: robot.device_t) void {
             'a' => robot.turn_robot(r, .left),
             's' => robot.move_robot(r, .backward),
             'd' => robot.turn_robot(r, .right),
+
+            'q' => robot.move_robot(r, .upward),
+            'e' => robot.move_robot(r, .downward),
             else => {},
         }
     }
