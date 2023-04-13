@@ -28,7 +28,7 @@ pub fn move_robot(robot: coverett.device_t, direction: MoveDirection) void {
         .downward => "d",
     };
 
-    _ = coverett.moveSync(@ptrCast([*c]coverett.device_t, @constCast(&robot)), @ptrCast([*c]u8, @constCast(dirStr)));
+    _ = coverett.moveAsync(@ptrCast([*c]coverett.device_t, @constCast(&robot)), @ptrCast([*c]u8, @constCast(dirStr)));
 }
 
 pub fn turn_robot(robot: coverett.device_t, direction: TurnDirection) void {
@@ -37,7 +37,7 @@ pub fn turn_robot(robot: coverett.device_t, direction: TurnDirection) void {
         .right => "r",
     };
 
-    _ = coverett.turnSync(@ptrCast([*c]coverett.device_t, @constCast(&robot)), @ptrCast([*c]u8, @constCast(dirStr)));
+    _ = coverett.turnAsync(@ptrCast([*c]coverett.device_t, @constCast(&robot)), @ptrCast([*c]u8, @constCast(dirStr)));
 }
 
 pub fn wait_for_last_action_completed(robot: coverett.device_t) void {
@@ -51,6 +51,11 @@ pub fn wait_for_last_action_completed(robot: coverett.device_t) void {
         const statusResult: coverett.result_t = coverett.getActionResult(device, id);
         std.debug.print("Status: {s}\n", .{statusResult.retString});
 
-        if (std.mem.eql(u8, std.mem.span(statusResult.retString), "SUCCESS")) break;
+        const span = std.mem.span(statusResult.retString);
+
+        if (std.mem.eql(u8, span, "SUCCESS")) break;
+        if (std.mem.eql(u8, span, "FAILURE")) @panic("Action failed");
+
+        std.time.sleep(25 * 1000000);
     }
 }
