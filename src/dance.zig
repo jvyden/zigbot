@@ -25,7 +25,7 @@ pub fn dance_loop(r: robot.device_t) void {
             else => @panic("Rand out of bounds\n"),
         }
 
-        robot.wait_for_last_action_completed(r);
+        robot.wait_for_last_action_completed(r, true);
     }
 }
 

@@ -40,16 +40,16 @@ pub fn turn_robot(robot: coverett.device_t, direction: TurnDirection) void {
     _ = coverett.turnAsync(@ptrCast([*c]coverett.device_t, @constCast(&robot)), @ptrCast([*c]u8, @constCast(dirStr)));
 }
 
-pub fn wait_for_last_action_completed(robot: coverett.device_t) void {
+pub fn wait_for_last_action_completed(robot: coverett.device_t, comptime log: bool) void {
     const device = @ptrCast([*c]coverett.device_t, @constCast(&robot));
     const idResult: coverett.result_t = coverett.getLastActionId(device);
     const id: c_int = @floatToInt(c_int, idResult.retNumber);
 
-    std.debug.print("Got action ID: {d}\n", .{id});
+    if (log) std.debug.print("Got action ID: {d}\n", .{id});
 
     while (true) {
         const statusResult: coverett.result_t = coverett.getActionResult(device, id);
-        std.debug.print("\r\x1B[0K" ++ "Action status: {s}", .{statusResult.retString});
+        if (log) std.debug.print("\r\x1B[0K" ++ "Action status: {s}", .{statusResult.retString});
 
         const span = std.mem.span(statusResult.retString);
 
@@ -59,5 +59,5 @@ pub fn wait_for_last_action_completed(robot: coverett.device_t) void {
         std.time.sleep(50 * 1000000);
     }
 
-    std.debug.print("\n", .{});
+    if (log) std.debug.print("\n", .{});
 }
