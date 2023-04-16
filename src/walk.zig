@@ -2,6 +2,8 @@ const robot = @import("./robot.zig");
 const std = @import("std");
 
 pub fn main() !void {
+    std.debug.print("Walk\n\nWASD = Move\nQ = Up, E = Down\n^C = Exit\n", .{});
+
     const old_termios = try std.os.tcgetattr(std.os.STDIN_FILENO);
     var new_termios = old_termios;
     new_termios.lflag &= ~std.os.linux.ICANON; // No line buffering
